@@ -12,7 +12,7 @@ typedef struct {
 } Cell;
 
 typedef struct {
-  Cell cells[2][2];
+  Cell cells[3][3];
 } Board;
 
 void render_board();
@@ -24,12 +24,12 @@ void init_board();
 // upon using one of the arrow keys change cursor location in array
 int main(int argc, char *argv[])
 {
-  printf("%c", X_MARK);
   int c; /* the character read*/
-  Board board;
-  Board* board_ptr = &board;
+  Board *board_ptr = malloc(sizeof *board_ptr);
 
   init_board(board_ptr);
+
+  // printf("%c", board_ptr->cells[0][0]);
 
   while ((c = getchar()) != EOF)
   {
