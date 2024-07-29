@@ -24,7 +24,12 @@ void render_board();
 void init_board();
 void update_cell(Board *board, int row, int col, char symbol);
 void init_ncurses();
-void move_cursor(int x, int y);
+void move_cursor(Screen_Position *scrpos, int x, int y);
+void move_cursor_up(Screen_Position *scrpos);
+void move_cursor_down(Screen_Position *scrpos);
+void move_cursor_left(Screen_Position *scrpos);
+void move_cursor_right(Screen_Position *scrpos);
+void handle_input(int ch, Screen_Position *scrpos, Board *board_ptr);
 
 // have a nine by nine array
 // render the array upon each input as some series of symbols
@@ -52,9 +57,7 @@ int main(int argc, char *argv[])
               */
           }
           else {
-              scrpos->x += 1;
-              scrpos->y += 1;
-              move_cursor(scrpos->x,scrpos->y);
+              handle_input(ch, scrpos, board_ptr);
               /* user has pressed a key ch
                ...
               */
@@ -94,6 +97,25 @@ void update_cell(Board *board, int row, int col, char symbol) {
   }
 }
 
+void handle_input(int ch, Screen_Position *scrpos, Board *board_ptr) {
+    switch (ch) {
+      case KEY_UP:
+          move_cursor_up(scrpos);
+          break;
+      case KEY_DOWN:
+          move_cursor_down(scrpos);
+          break;
+      case KEY_LEFT:
+          move_cursor_left(scrpos);
+          break;
+      case KEY_RIGHT:
+          move_cursor_right(scrpos);
+          break;
+      default:
+          move_cursor(scrpos, 0, 0); 
+  }
+}
+
 void init_ncurses() {
   initscr();
   cbreak();
@@ -101,7 +123,33 @@ void init_ncurses() {
   keypad(stdscr, true);
 }
 
-void move_cursor(int x, int y) {
-  move(x, y);
+void move_cursor(Screen_Position *scrpos, int y, int x) {
+  scrpos->x = x;
+  scrpos->y = y;
+  move(scrpos->y, scrpos->x);
+  refresh();
+}
+
+void move_cursor_up(Screen_Position *scrpos) {
+  scrpos->y = scrpos->y - 1;
+  move(scrpos->y, scrpos->x);
+  refresh();
+}
+
+void move_cursor_down(Screen_Position *scrpos) {
+  scrpos->y = scrpos->y + 1;
+  move(scrpos->y, scrpos->x);
+  refresh();
+}
+
+void move_cursor_left(Screen_Position *scrpos) {
+  scrpos->x = scrpos->x - 1;
+  move(scrpos->y, scrpos->x);
+  refresh();
+}
+
+void move_cursor_right(Screen_Position *scrpos) {
+  scrpos->x = scrpos->x + 1;
+  move(scrpos->y, scrpos->x);
   refresh();
 }
